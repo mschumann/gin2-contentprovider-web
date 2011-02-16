@@ -1,0 +1,170 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.iqser.plugin.web</groupId>
+	<artifactId>web-plugins</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+ 	<name>web-plugins</name>
+	<url>http://www.iqser.com</url>
+ 	
+  	<properties>
+    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+  
+  	<developers>
+		<developer>
+			<id>joerg.wurzer</id>
+			<name>Jörg Wurzer</name>
+			<email>joerg.wurzer@iqser.net</email>
+			<organization>IQser GmbH</organization>
+			<organizationUrl>http://www.iqser.net</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
+	
+	<organization>
+		<name>IQser GmbH</name>
+		<url>http://www.iqser.net</url>
+	</organization>
+	
+	<build>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-webdav</artifactId>
+				<version>1.0-beta-1</version>
+			</extension>
+		</extensions>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<fork>true</fork>
+					<source>5</source>
+					<target>5</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+          			<skipTests>true</skipTests>
+          			<includes>
+- 						<include>**/*Test.java</include>
+- 					</includes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
+	<modules>
+		<module>base-plugin</module>
+		<module>pdf-plugin</module>
+		<module>html-plugin</module>
+		<module>crawler</module>
+	</modules>
+	
+	<repositories>
+		<repository>
+			<id>iqser_release</id>
+			<name>Artifactory Mirror</name>
+			<url>http://88.198.17.108:8081/artifactory/repo</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>  
+ 			<id>wso2</id>  
+ 			<url>http://dist.wso2.org/maven2/</url>  
+		</repository>  
+	</repositories>
+	
+	<pluginRepositories>
+		<pluginRepository>
+			<id>iqser_release</id>
+			<url>http://88.198.17.108:8081/artifactory/repo</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<dependencies>
+    	<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+    	</dependency>
+    	
+ 		<dependency>
+			<groupId>com.iqser.core</groupId>
+			<artifactId>iqser-core-api</artifactId>
+			<version>1.2.2.1-SNAPSHOT</version>
+		</dependency>
+		
+		 <dependency>
+			<groupId>com.iqser.core</groupId>
+			<artifactId>iqser-core-plugin</artifactId>
+			<version>1.2.2.1-SNAPSHOT</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.iqser.core</groupId>
+			<artifactId>iqser-test-api</artifactId>
+			<version>1.2.2.1-SNAPSHOT</version>
+		</dependency>
+
+  		<dependency>
+ 			<groupId>com.torunski.crawler</groupId>
+  			<artifactId>crawler</artifactId>
+  			<version>0.6.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.htmlparser</groupId>
+			<artifactId>htmlparser</artifactId>
+			<version>1.6</version>
+		</dependency>
+		
+		<dependency>
+    		<groupId>mysql</groupId>
+    		<artifactId>mysql-connector-java</artifactId>
+    		<version>5.1.10</version>
+    		<scope>provided</scope>
+	 	</dependency>
+	 	
+		<dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.4</version>
+            <scope>provided</scope>
+        </dependency>
+		   
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.14</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+ 			<groupId>org.apache.pdfbox</groupId>
+ 			<artifactId>pdfbox</artifactId>
+			<version>1.2.1</version>
+		</dependency>
+
+	</dependencies>
+  
+</project>

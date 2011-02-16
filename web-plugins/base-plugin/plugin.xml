@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<iqser>
+	<plugin>
+		<id>com.iqser.plugin.web.crawler</id>
+		<type>Any Content</type>
+		<name>Base Web Plugin</name>
+		<vendor>IQser Technologies</vendor>
+		<provider-class>
+			com.iqser.demo.plugin.web.CrawlerContentProvider
+		</provider-class>
+		<!-- Use a Cron formatted string to define the synchronisation schedule. -->
+		<scheduler> 
+			<syncjob>0 5 * * * ?</syncjob> 
+			<housekeeperjob>0 0 23 * * ?</housekeeperjob> 
+		</scheduler> 
+		<!-- Crawler settings -->
+		<init-param>
+			<!-- Required server as a starting point for crawling -->
+			<param-name>start-server</param-name>
+			<param-value><!-- Any servier url --></param-value>
+		</init-param>
+		<init-param>
+			<!-- Optional path as a starting point for crawling -->
+			<param-name>start-path</param-name>
+			<param-value><!-- Any path --></param-value>
+		</init-param>
+		<init-param>
+			<!-- Optional filter to limit the crawler to a domain -->
+			<param-name>server-filter</param-name>
+			<param-value><!-- any server url --></param-value>
+		</init-param>
+		<init-param>
+			<!-- Optional filter to limit the crawler to a path -->
+			<param-name>path-filter</param-name>
+			<param-value><!-- Any path --></param-value>
+		</init-param>
+		<init-param>
+			<!-- Optional filter to define the links to crawl -->
+			<param-name>link-filter</param-name>
+			<param-value><!-- Any regular expression --></param-value>
+		</init-param>
+		<init-param>
+			<!-- Optional filter to specify the crawl depth. Default is 2 -->
+			<param-name>maxdepth-filter</param-name>
+			<param-value><!-- Any integer value --></param-value>
+		</init-param>
+		<!-- Parser settings -->
+		<init-param>
+			<!-- Optional filter to specify items to parse. Default are web pages -->
+			<param-name>item-filter</param-name>
+			<param-value><!-- Any regular expression --></param-value>
+		</init-param>
+		<!-- Database settings -->
+		<init-param>
+			<param-name>protocol</param-name>
+			<param-value><!-- optional protocol, if mySQL is not used --></param-value>
+		</init-param>
+		<init-param>
+			<param-name>database</param-name>
+			<param-value><!-- path to database like localhost/database --></param-value>
+		</init-param>
+		<init-param>
+			<param-name>username</param-name>
+			<param-value><!-- user name of database --></param-value>
+		</init-param>	
+		<init-param>
+			<param-name>password</param-name>
+			<param-value><!-- password for database access --></param-value>
+		</init-param>
+	</plugin>
+</iqser>

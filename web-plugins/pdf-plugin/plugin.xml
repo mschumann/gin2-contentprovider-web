@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<iqser>
+	<plugin>
+		<id>com.iqser.plugin.web.html</id>
+		<!-- Modify the type in your iqser configuration, if necessary -->
+		<type>PDF Document</type>
+		<name>PDF Web Plugin</name>
+		<vendor>IQser Technologies</vendor>
+		<provider-class>
+			com.iqser.demo.plugin.web.PDFContentProvider
+		</provider-class>
+		<!-- Use a Cron formatted string to define the synchronisation schedule. -->
+		<scheduler> 
+			<syncjob>0 5 * * * ?</syncjob> 
+			<housekeeperjob>0 0 23 * * ?</housekeeperjob> 
+		</scheduler> 
+		<init-param>
+			<param-name><!-- any optional attribute name to map --></param-name>
+			<param-value><!-- any attribute name replacing the default one --></param-value>
+		</init-param>
+	</plugin>
+</iqser>

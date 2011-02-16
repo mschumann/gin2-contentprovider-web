@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<artifactId>web-plugins</artifactId>
+		<groupId>com.iqser.plugin.web</groupId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<groupId>com.iqser.plugin.web</groupId>
+	<artifactId>crawler</artifactId>
+	<packaging>war</packaging>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>crawler</name>
+	
+	<build>
+		<plugins>
+      		<plugin>
+        		<groupId>org.apache.maven.plugins</groupId>
+        		<artifactId>maven-war-plugin</artifactId>
+        		<version>2.1.1</version>
+        		<configuration>
+          			<!-- 
+          			<webappDirectory>/Users/joerg/Documents/IQser/Development/sdk/jboss-4.2.2.GA/server/default/deploy/iqser-crawler.war</webappDirectory>	
+        			-->
+        			<packagingExcludes>WEB-INF/lib/iqser*,WEB-INF/lib/commons-logging*</packagingExcludes>
+        			<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<!-- <classpathPrefix>lib/</classpathPrefix>-->
+						</manifest>
+					</archive>
+				</configuration>
+      		</plugin>
+      		<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skip>${env.SKIP_MAVEN_TEST}</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

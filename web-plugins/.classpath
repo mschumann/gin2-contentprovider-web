@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="html-plugin/src/main/java"/>
+	<classpathentry kind="src" path="html-plugin/src/test/java"/>
+	<classpathentry kind="src" path="pdf-plugin/src/main/java"/>
+	<classpathentry kind="src" path="pdf-plugin/src/test/java"/>
+	<classpathentry kind="src" path="base-plugin/src/main/java"/>
+	<classpathentry kind="src" path="crawler/src/main/java"/>
+	<classpathentry kind="src" path="base-plugin/src/test/java"/>
+	<classpathentry kind="src" path="crawler/src/test/java"/>
+	<classpathentry kind="con" path="org.eclipse.iam.jdt.core.mavenClasspathContainer"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
