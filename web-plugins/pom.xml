@@ -10,8 +10,12 @@
  	<name>web-plugins</name>
 	<url>http://www.iqser.com</url>
  	
-  	<properties>
-    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<iqser.version>1.6-SNAPSHOT</iqser.version>
+		<compileSource>1.5</compileSource>
+		<sourceforge.artifact>${project.build.directory}/${project.build.finalName}</sourceforge.artifact>
+		<sourceforge.upload>${sf.username},iqserwebplugin@frs.sourceforge.net:/home/pfs/project/i/iq/iqserwebplugin</sourceforge.upload>
 	</properties>
   
   	<developers>
@@ -59,6 +63,82 @@
 - 					</includes>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<configuration>
+					<preparationGoals>clean verify</preparationGoals>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.7</version>
+				<executions>
+					<execution>
+						<id>javadoc-jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>aggregate-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.1.2</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<dependencies>
+					<dependency>
+						<groupId>ant</groupId>
+						<artifactId>ant-jsch</artifactId>
+						<version>1.6.5</version>
+					</dependency>
+					<dependency>
+						<groupId>jsch</groupId>
+						<artifactId>jsch</artifactId>
+						<version>0.1.25</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<id>publish_jar</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<scp todir="${sourceforge.upload}" password="${sf.password}"
+									trust="true">
+									<fileset dir="${project.build.directory}">
+										<include name="${project.build.finalName}*.jar" />
+									</fileset>
+								</scp>
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>2.1.1</version>
+			</plugin>
+			
+			
 		</plugins>
 	</build>
 	
@@ -69,11 +149,11 @@
 		<module>crawler</module>
 	</modules>
 	
-	<repositories>
+<repositories>
 		<repository>
 			<id>iqser_release</id>
-			<name>Artifactory Mirror</name>
-			<url>http://88.198.17.108:8081/artifactory/repo</url>
+			<name>Nexus Mirror</name>
+			<url>http://nexus.iqser.com/nexus/content/groups/repo</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
@@ -81,16 +161,37 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+		<repository>
+			<id>iqserwebplugin-repo</id>
+			<name>iQser Web Plugin Repository</name>
+			<url>http://iqserwebplugin.sourceforge.net/maven2-snap</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>iqserwebplugin-repo</id>
+			<name>iQser Web Plugin Repository</name>
+			<url>http://iqserwebplugin.sourceforge.net/maven2</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
 		<repository>  
  			<id>wso2</id>  
  			<url>http://dist.wso2.org/maven2/</url>  
 		</repository>  
 	</repositories>
-	
 	<pluginRepositories>
 		<pluginRepository>
 			<id>iqser_release</id>
-			<url>http://88.198.17.108:8081/artifactory/repo</url>
+			<url>http://nexus.iqser.com/nexus/content/groups/repo</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
@@ -99,6 +200,9 @@
 			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
+		
+	
+	
 
 	<dependencies>
     	<dependency>
@@ -166,5 +270,27 @@
 		</dependency>
 
 	</dependencies>
-  
+  <distributionManagement>
+		<repository>
+			<id>iqserwebplugin-repo</id>
+			<name>iQser Web Plugin Repository</name>
+			<url>
+				sftp://web.sourceforge.net/home/project-web/iqserwebplugin/htdocs/maven2
+			</url>
+		</repository>
+		<snapshotRepository>
+			<id>iqserwebplugin-repo-snap</id>
+			<name>iQser web Plugin Snapshot-Repository</name>
+			<url>
+				sftp://web.sourceforge.net/home/project-web/iqserwebplugin/htdocs/maven2-snap
+			</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+		<site>
+			<id>iqserwebplugin.sourceforge.net</id>
+			<name>iQser Web Plugin</name>
+			<url>sftp://web.sourceforge.net/home/project-web/iqserwebplugin/htdocs
+			</url>
+		</site>
+	</distributionManagement>
 </project>
