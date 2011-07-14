@@ -9,7 +9,7 @@
 	<artifactId>base-plugin</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0.0-SNAPSHOT</version>
-	<name>crawler-plugin</name>
+	<name>base-plugin</name>
 	<build>
 		<plugins>
 			<plugin>
