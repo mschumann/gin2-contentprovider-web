@@ -6,7 +6,7 @@
 
 	<!-- ServiceLocator -->
 	<servicelocator>
-		<class>com.iqser.plugin.web.test.TestServiceLocator</class>
+		<class>net.sf.iqser.plugin.web.test.TestServiceLocator</class>
 	</servicelocator>
 
 	<!-- CategoryBuilder -->
@@ -47,7 +47,7 @@
 	<plugins>
 		<!-- Plugin settings are ignored for testing -->
 		<plugin>
-			<id>com.iqser.plugin.web.pdf</id>
+			<id>net.sf.iqser.plugin.web.pdf</id>
 			<type>PDF Document</type>
 			<name>PDF Web Plugin</name>
 			<vendor>IQser Technologies</vendor>

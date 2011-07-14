@@ -2,17 +2,37 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.iqser.plugin.web</groupId>
+	<groupId>net.sf.iqser.plugin.web</groupId>
 	<artifactId>web-plugins</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
-
- 	<name>web-plugins</name>
-	<url>http://www.iqser.com</url>
- 	
+	<name>Web ContentProvider for iQser GIN</name>
+	<description>The goal of this project is to provide a reusable library to transform any web page or data to content objects by generic, configurable ContentProvider plugins for the iQser GIN Semantic Middleware (www.iqser.com).
+	</description>
+	<url>http://iqserwebplugin.sourceforge.net</url>
+	
+		<scm>
+		<connection>
+			scm:svn:http://iqserwebpluginsourceforge.net/viewvc/iqserwebplugin/trunk
+		</connection>
+		<developerConnection>
+			scm:svn:https://iqserwebplugin.svn.sourceforge.net/svnroot/iqserwebplugin/trunk
+		</developerConnection>
+		<url>http://iqserwebplugin.svn.sourceforge.net/viewvc/iqserwebplugin</url>
+	</scm>
+	<licenses>
+		<license>
+			<name>Apache 2</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+			<comments>A business-friendly OSS license</comments>
+		</license>
+	</licenses>
+	
+	
 <properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<iqser.version>1.6-SNAPSHOT</iqser.version>
+		<iqser.version>1.5</iqser.version>
 		<compileSource>1.5</compileSource>
 		<sourceforge.artifact>${project.build.directory}/${project.build.finalName}</sourceforge.artifact>
 		<sourceforge.upload>${sf.username},iqserwebplugin@frs.sourceforge.net:/home/pfs/project/i/iq/iqserwebplugin</sourceforge.upload>
@@ -210,26 +230,18 @@
 			<artifactId>junit</artifactId>
 			<version>3.8.1</version>
 			<scope>test</scope>
-    	</dependency>
-    	
+    	</dependency>	
  		<dependency>
 			<groupId>com.iqser.core</groupId>
 			<artifactId>iqser-core-api</artifactId>
-			<version>1.2.2.1</version>
+			<version>${iqser.version}</version>
 		</dependency>
 		
 		 <dependency>
 			<groupId>com.iqser.core</groupId>
 			<artifactId>iqser-core-plugin</artifactId>
-			<version>1.2.2.1</version>
+			<version>${iqser.version}</version>
 		</dependency>
-		
-		<dependency>
-			<groupId>com.iqser.core</groupId>
-			<artifactId>iqser-test-api</artifactId>
-			<version>1.2.2.1</version>
-		</dependency>
-
   		<dependency>
  			<groupId>com.torunski.crawler</groupId>
   			<artifactId>crawler</artifactId>

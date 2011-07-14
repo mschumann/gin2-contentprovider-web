@@ -3,18 +3,16 @@
 
 	<parent>
 		<artifactId>web-plugins</artifactId>
-		<groupId>com.iqser.plugin.web</groupId>
+		<groupId>net.sf.iqser.plugin.web</groupId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
-	<groupId>com.iqser.plugin.web</groupId>
+	<groupId>net.sf.iqser.plugin.web</groupId>
 	<artifactId>pdf-plugin</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0.0-SNAPSHOT</version>
 	<name>pdf-plugin</name>
 
-	<url>http://www.iqser.com</url>
-	
 	<build>
 		<plugins>
 			<plugin>

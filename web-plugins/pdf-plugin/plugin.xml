@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <iqser>
 	<plugin>
-		<id>com.iqser.plugin.web.html</id>
+		<id>net.sf.iqser.plugin.web.pdf</id>
 		<!-- Modify the type in your iqser configuration, if necessary -->
 		<type>PDF Document</type>
 		<name>PDF Web Plugin</name>
 		<vendor>IQser Technologies</vendor>
 		<provider-class>
-			com.iqser.demo.plugin.web.PDFContentProvider
+			cnet.sf.iqser.plugin.web.pdf.PDFContentProvider
 		</provider-class>
 		<!-- Use a Cron formatted string to define the synchronisation schedule. -->
 		<scheduler> 

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <iqser>
 	<plugin>
-		<id>com.iqser.plugin.web.html</id>
+		<id>net.sf.iqser.plugin.web.html</id>
 		<!-- Modify the type in your iqser configuration, if necessary -->
 		<type>Web Page</type>
 		<name>HTML Web Plugin</name>
 		<vendor>IQser Technologies</vendor>
 		<provider-class>
-			com.iqser.demo.plugin.web.HTMLContentProvider
+			net.sf.iqser.plugin.web.html.HTMLContentProvider
 		</provider-class>
 		<!-- Use a Cron formatted string to define the synchronisation schedule. -->
 		<scheduler> 

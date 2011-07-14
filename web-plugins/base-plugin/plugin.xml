@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <iqser>
 	<plugin>
-		<id>com.iqser.plugin.web.crawler</id>
+		<id>net.sf.iqser.plugin.web.crawler</id>
 		<type>Any Content</type>
 		<name>Base Web Plugin</name>
 		<vendor>IQser Technologies</vendor>
 		<provider-class>
-			com.iqser.demo.plugin.web.CrawlerContentProvider
+			net.sf.iqser.plugin.web.base.CrawlerContentProvider
 		</provider-class>
 		<!-- Use a Cron formatted string to define the synchronisation schedule. -->
 		<scheduler> 

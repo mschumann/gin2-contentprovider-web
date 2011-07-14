@@ -3,11 +3,11 @@
 	
 	<parent>
 		<artifactId>web-plugins</artifactId>
-		<groupId>com.iqser.plugin.web</groupId>
+		<groupId>net.sf.iqser.plugin.web</groupId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
-	<groupId>com.iqser.plugin.web</groupId>
+	<groupId>net.sf.iqser.plugin.web</groupId>
 	<artifactId>crawler</artifactId>
 	<packaging>war</packaging>
 	<version>1.0.0-SNAPSHOT</version>

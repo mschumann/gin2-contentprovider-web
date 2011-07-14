@@ -1,5 +1,5 @@
 <IQser>
-	<version>1.2.2.1</version>
+	<version>1.5</version>
 	<index>
 		<path>./index</path>
 	</index>
@@ -109,13 +109,13 @@
 			</init-param>
 		</plugin>
 		<plugin>
-			<id>com.iqser.plugin.web.custom</id>
+			<id>net.sf.iqser.plugin.web.html</id>
 			<!-- Modify the type in your iqser configuration, if necessary -->
 			<type>Custom Tariff</type>
 			<name>Custom Web Plugin</name>
 			<vendor>IQser Technologies</vendor>
 			<provider-class>
-				com.iqser.demo.plugin.web.HTMLContentProvider
+				net.sf.iqser.plugin.web.html.HTMLContentProvider
 			</provider-class>
 			<!-- Use a Cron formatted string to define the synchronisation schedule. -->
 			<scheduler> 
@@ -205,7 +205,7 @@
 			<name>WlW Web Plugin</name>
 			<vendor>IQser Technologies</vendor>
 			<provider-class>
-				com.iqser.demo.plugin.web.HTMLContentProvider
+				net.sf.iqser.plugin.web.html.HTMLContentProvider
 			</provider-class>
 			<!-- Use a Cron formatted string to define the synchronisation schedule. -->
 			<scheduler> 

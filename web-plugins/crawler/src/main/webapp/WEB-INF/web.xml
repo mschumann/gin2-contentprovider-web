@@ -5,7 +5,7 @@
 
 	<servlet>
       <servlet-name>CrawlerServlet</servlet-name>
-      <servlet-class>com.iqser.plugin.web.crawler.CrawlerServlet</servlet-class>
+      <servlet-class>net.sf.iqser.plugin.web.crawler.CrawlerServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>

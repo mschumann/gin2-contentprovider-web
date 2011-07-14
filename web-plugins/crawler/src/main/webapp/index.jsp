@@ -5,11 +5,8 @@
     <META http-equiv=Content-Type content="text/html; charset=windows-1252">
 </HEAD>
 <BODY>
-<FONT FACE="ARIAL">
-<H2>iQser Crawler Servlet</H2>
-<P>
-You are welcome!
-</FONT>
+<H2><FONT FACE="ARIAL">iQser Crawler Servlet</FONT></H2>
+<P><FONT FACE="ARIAL">You are welcome!</FONT></P>
 </BODY>
 </HTML>
 
