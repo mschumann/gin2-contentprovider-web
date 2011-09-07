@@ -11,6 +11,7 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.zip.Adler32;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.htmlparser.util.NodeList;
 
@@ -22,7 +23,6 @@ import com.torunski.crawler.events.ParserEvent;
 import com.torunski.crawler.filter.LinkFilterUtil;
 import com.torunski.crawler.filter.RegularExpressionFilter;
 import com.torunski.crawler.filter.ServerFilter;
-import com.torunski.crawler.link.Link;
 import com.torunski.crawler.model.MaxDepthModel;
 import com.torunski.crawler.parser.htmlparser.SimpleHtmlParser;
 
@@ -247,9 +247,15 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 	public void parse(ParserEvent event) {
 		logger.debug("parse() called for link " + event.getLink().getURI());
 		
-		if (event.getCrawler().equals(crawler) && isContentLink(event.getLink())) {
+		String link = event.getLink().getURI();
+		
+		if (event.getLink().getURI().matches("\\S+&\\w{3};\\S+")) {
+			link = StringEscapeUtils.unescapeHtml(event.getLink().getURI());
+		}
+		
+		if (event.getCrawler().equals(crawler) && isContentLink(link)) {
 			
-			logger.debug("Content " + event.getLink().getURI() + " matched");
+			logger.debug("Content " + link + " matched");
 			
 			Statement stmt = null;
 			ResultSet rs   = null;
@@ -257,13 +263,13 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 			long checksum1 = 0;
 						
 			try {
-				URL url = new URL( event.getLink().getURI() );
+				URL url = new URL( link );
 				checksum1 = url.openConnection().getLastModified();
 			} catch (MalformedURLException mfe) {
-				logger.error("Malformed url " + event.getLink().getURI() + " - " + mfe.getMessage());
+				logger.error("Malformed url " + link + " - " + mfe.getMessage());
 				return;
 			} catch (IOException ioe) {
-				logger.error("Couldn't read " + event.getLink().getURI() + " - " + ioe.getMessage());
+				logger.error("Couldn't read " + link + " - " + ioe.getMessage());
 				return;
 			}
 			
@@ -276,7 +282,7 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 			
 			try {
 				stmt = conn.createStatement();
-				rs = stmt.executeQuery("SELECT * FROM documents WHERE url='" + event.getLink().getURI() + "'");
+				rs = stmt.executeQuery("SELECT * FROM documents WHERE url='" + link + "'");
 				
 				// Has the source already be parsed?
 				if (rs.first()) {
@@ -291,14 +297,14 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 						stmt.executeUpdate("UPDATE documents SET checksum=" + checksum1 +
 								", checked=" + String.valueOf(System.currentTimeMillis()) +
 								" WHERE id=" + rs.getString("id"));
-						this.updateContent(getContent(event.getLink().getURI()));
+						this.updateContent(getContent(link));
 					}
 					
 				} else {
 					stmt.executeUpdate("INSERT INTO documents VALUES " + 
 							"(DEFAULT, '" + event.getLink().getURI() + "', " + checksum1 +
 							", '" + getId() + "', " + String.valueOf(System.currentTimeMillis()) + ")");
-					this.addContent(getContent(event.getLink().getURI()));
+					this.addContent(getContent(link));
 				}
 				
 			} catch (SQLException e) {
@@ -331,8 +337,8 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 	 * Checks wether a link has to be parsed by the provider. 
 	 * This is determined by the initial parameters in the confugraiton of the plugin.
 	 */
-	private boolean isContentLink(Link link) {
-		if (link.getURI().matches(getInitParams().getProperty("item-filter", DEFAULT_REGEX)))
+	private boolean isContentLink(String link) {
+		if (link.matches(getInitParams().getProperty("item-filter", DEFAULT_REGEX)))
 			return true;
 		else
 			return false;
