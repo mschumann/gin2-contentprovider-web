@@ -24,7 +24,7 @@ import com.torunski.crawler.filter.LinkFilterUtil;
 import com.torunski.crawler.filter.RegularExpressionFilter;
 import com.torunski.crawler.filter.ServerFilter;
 import com.torunski.crawler.model.MaxDepthModel;
-import com.torunski.crawler.parser.htmlparser.SimpleHtmlParser;
+import com.torunski.crawler.parser.IParser;
 
 /**
  * A base content provider for the iQser GIN Platform to crawle and parse web content 
@@ -78,7 +78,7 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 		crawler.setModel(
 				new MaxDepthModel(Integer.valueOf(getInitParams().getProperty("maxdepth-filter", "2"))) );
 		
-		SimpleHtmlParser parser = new SimpleHtmlParser();
+		IParser parser = new ExtendedHtmlParser();
 		
 		crawler.setParser(parser);
 		crawler.addParserListener(this); 
@@ -334,12 +334,11 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 	}
 	
 	/**
-	 * Checks wether a link has to be parsed by the provider. 
-	 * This is determined by the initial parameters in the confugraiton of the plugin.
+	 * Checks weather a link has to be parsed by the provider. 
+	 * This is determined by the initial parameters in the configuration of the plugin.
 	 */
 	private boolean isContentLink(String link) {
-		if (link.matches(getInitParams().getProperty("item-filter", DEFAULT_REGEX))
-				&& ! link.matches("\\S+&\\w{3}%\\S+"))
+		if (link.matches(getInitParams().getProperty("item-filter", DEFAULT_REGEX)))
 			return true;
 		else
 			return false;
