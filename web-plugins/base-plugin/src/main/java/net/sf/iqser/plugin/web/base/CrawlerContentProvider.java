@@ -338,7 +338,8 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 	 * This is determined by the initial parameters in the confugraiton of the plugin.
 	 */
 	private boolean isContentLink(String link) {
-		if (link.matches(getInitParams().getProperty("item-filter", DEFAULT_REGEX)))
+		if (link.matches(getInitParams().getProperty("item-filter", DEFAULT_REGEX))
+				&& ! link.matches("\\S+&\\w{3}%\\S+"))
 			return true;
 		else
 			return false;
