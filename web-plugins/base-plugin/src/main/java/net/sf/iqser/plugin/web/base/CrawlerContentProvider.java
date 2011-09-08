@@ -249,7 +249,7 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 		
 		String link = event.getLink().getURI();
 		
-		if (event.getLink().getURI().matches("\\S+&\\w{3};\\S+")) {
+		if (link.matches("\\S+&\\w{3};\\S+")) {
 			link = StringEscapeUtils.unescapeHtml(event.getLink().getURI());
 		}
 		
@@ -302,7 +302,7 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 					
 				} else {
 					stmt.executeUpdate("INSERT INTO documents VALUES " + 
-							"(DEFAULT, '" + event.getLink().getURI() + "', " + checksum1 +
+							"(DEFAULT, '" + link + "', " + checksum1 +
 							", '" + getId() + "', " + String.valueOf(System.currentTimeMillis()) + ")");
 					this.addContent(getContent(link));
 				}
