@@ -52,7 +52,7 @@ public class SwissPostCrawlerContentProviderTest extends TestCase {
 		initParams.setProperty("start-path", "/aktuell/index.html?lang=en");
 		initParams.setProperty("server-filter", "http://www.admin.ch");
 		initParams.setProperty("path-filter", "/aktuell/");
-		initParams.setProperty("maxdepth-filter", "1");
+		initParams.setProperty("maxdepth-filter", "4");
 		initParams.setProperty("link-filter", "\\S+\\.html\\S*");
 		initParams.setProperty("item-filter", "\\S+\\.html\\S+id=\\d{5}$");
 		
