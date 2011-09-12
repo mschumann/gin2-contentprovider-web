@@ -24,7 +24,6 @@ import com.torunski.crawler.filter.LinkFilterUtil;
 import com.torunski.crawler.filter.RegularExpressionFilter;
 import com.torunski.crawler.filter.ServerFilter;
 import com.torunski.crawler.model.MaxDepthModel;
-import com.torunski.crawler.parser.IParser;
 
 /**
  * A base content provider for the iQser GIN Platform to crawle and parse web content 
@@ -78,7 +77,8 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 		crawler.setModel(
 				new MaxDepthModel(Integer.valueOf(getInitParams().getProperty("maxdepth-filter", "2"))) );
 		
-		IParser parser = new ExtendedHtmlParser();
+		ExtendedHtmlParser parser = new ExtendedHtmlParser();
+		parser.setEncoding(getInitParams().getProperty("charset", "UTF-8"));
 		
 		crawler.setParser(parser);
 		crawler.addParserListener(this); 

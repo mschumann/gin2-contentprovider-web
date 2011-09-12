@@ -50,6 +50,11 @@
 			<param-name>item-filter</param-name>
 			<param-value><!-- Any regular expression --></param-value>
 		</init-param>
+		<init-param>
+			<!-- Optional setting to specify character set of the web pages -->
+			<param-name>charset</param-name>
+			<param-value><!-- Any charset name --></param-value>
+		</init-param>
 		<!-- Database settings -->
 		<init-param>
 			<param-name>protocol</param-name>

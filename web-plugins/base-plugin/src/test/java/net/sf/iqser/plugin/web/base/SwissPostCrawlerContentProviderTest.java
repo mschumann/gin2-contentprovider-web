@@ -48,13 +48,20 @@ public class SwissPostCrawlerContentProviderTest extends TestCase {
 		initParams.setProperty("database", "localhost/crawler");
 		initParams.setProperty("username", "root");
 		initParams.setProperty("password", "master");
-		initParams.setProperty("start-server", "http://www.admin.ch");
-		initParams.setProperty("start-path", "/aktuell/index.html?lang=en");
-		initParams.setProperty("server-filter", "http://www.admin.ch");
-		initParams.setProperty("path-filter", "/aktuell/");
-		initParams.setProperty("maxdepth-filter", "4");
+//		initParams.setProperty("start-server", "http://www.admin.ch");
+//		initParams.setProperty("start-path", "/aktuell/index.html?lang=en");
+//		initParams.setProperty("server-filter", "http://www.admin.ch");
+//		initParams.setProperty("path-filter", "/aktuell/");
+//		initParams.setProperty("maxdepth-filter", "2");
+//		initParams.setProperty("link-filter", "\\S+\\.html\\S*");
+//		initParams.setProperty("item-filter", "\\S+\\.html\\S+id=\\d{5}$");
+		initParams.setProperty("start-server", "http://www.ejpd.admin.ch");
+		initParams.setProperty("start-path", "/content/ejpd/en/home/themen/migration/ref_fza_schweiz-eu-efta.html");
+		initParams.setProperty("server-filter", "http://www.ejpd.admin.ch");
+		initParams.setProperty("path-filter", "/content/ejpd/en/home/themen/migration/");
+		initParams.setProperty("maxdepth-filter", "1");
 		initParams.setProperty("link-filter", "\\S+\\.html\\S*");
-		initParams.setProperty("item-filter", "\\S+\\.html\\S+id=\\d{5}$");
+		initParams.setProperty("item-filter", "\\S+\\.html");
 		
 		provider.setInitParams(initParams);
 		provider.setType("News");
