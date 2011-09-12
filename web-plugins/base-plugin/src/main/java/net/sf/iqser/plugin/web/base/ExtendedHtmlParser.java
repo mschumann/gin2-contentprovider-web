@@ -28,9 +28,19 @@ public class ExtendedHtmlParser extends SimpleHtmlParser{
 		
 		Set<String> links = new HashSet<String>();
 		
-		for ( String link : oldLinks) {
-			link = StringEscapeUtils.unescapeHtml(link);
-			links.add(link);
+		for ( String link : oldLinks) {			
+			String newLink = StringEscapeUtils.unescapeHtml(link);
+			/**
+			 * Workaround:  StringEscapeUtils.unescapeHtml does not handle well the following link
+			 * http://www.bk.admin.ch/aktuell/media/index.html?lang=en&org-nr=101&kind=M&type=A&amp;flexid=3_6&amp;start_index=3&amp;end_index=6
+			 * The result is 
+			 * http://www.bk.admin.ch/aktuell/media/index.html?lang=en&org-nr=101&kind=M&type=A&amp;flexid=3_6&start_index=3&end_index=6		
+			 * which contains &amp;
+			 */
+			if (newLink.contains("&amp;")){
+				newLink = newLink.replaceAll("&amp;", "&");
+			}
+			links.add(newLink);
 		}
 						
 		return links;
