@@ -75,7 +75,9 @@ public class HTMLContentProvider extends CrawlerContentProvider {
 			Node item = nodes.elementAt(0);
 			
 			// Setting the attributes including fulltext
-			createContentAttributes(c, item);
+			if (item != null) {
+				createContentAttributes(c, item);
+			}
 			
 		} catch (ParserException e) {
 			logger.error("Couldn't parse source - " + e.getMessage());
