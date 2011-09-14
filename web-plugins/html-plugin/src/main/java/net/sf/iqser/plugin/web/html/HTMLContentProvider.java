@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.Properties;
 
 import net.sf.iqser.plugin.web.base.CrawlerContentProvider;
+import net.sf.iqser.plugin.web.html.filters.RegExHasAttributeFilter;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
@@ -191,9 +192,9 @@ public class HTMLContentProvider extends CrawlerContentProvider {
 		} 
 
 		if (!fParam[1].equals("*") && fParam[2].equals("*")) {
-			fCol.add(new HasAttributeFilter(fParam[1]));
+			fCol.add(new RegExHasAttributeFilter(fParam[1]));
 		} else if (!fParam[1].equals("*") && !fParam[2].equals("*")) {
-			fCol.add(new HasAttributeFilter(fParam[1], fParam[2]));
+			fCol.add(new RegExHasAttributeFilter(fParam[1], fParam[2]));
 		} 
 		
 		if (!fParam[3].equals("*")) {
@@ -229,9 +230,9 @@ public class HTMLContentProvider extends CrawlerContentProvider {
 			} 
 
 			if (!fParam[1].equals("*") && fParam[2].equals("*")) {
-				fAndCol.add(new HasAttributeFilter(fParam[1]));
+				fAndCol.add(new RegExHasAttributeFilter(fParam[1]));
 			} else if (!fParam[1].equals("*") && !fParam[2].equals("*")) {
-				fAndCol.add(new HasAttributeFilter(fParam[1], fParam[2]));
+				fAndCol.add(new RegExHasAttributeFilter(fParam[1], fParam[2]));
 			} 
 		
 			if (!fParam[3].equals("*")) {
