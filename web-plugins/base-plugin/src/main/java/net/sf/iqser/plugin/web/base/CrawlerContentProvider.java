@@ -8,6 +8,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.zip.Adler32;
 
@@ -20,6 +21,7 @@ import com.iqser.core.plugin.AbstractContentProvider;
 import com.torunski.crawler.Crawler;
 import com.torunski.crawler.events.IParserEventListener;
 import com.torunski.crawler.events.ParserEvent;
+import com.torunski.crawler.filter.ILinkFilter;
 import com.torunski.crawler.filter.LinkFilterUtil;
 import com.torunski.crawler.filter.RegularExpressionFilter;
 import com.torunski.crawler.filter.ServerFilter;
@@ -39,7 +41,7 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 	private static final long serialVersionUID = 1L;
 	
 	/** Default link filter */
-	private static final String DEFAULT_REGEX = "(.*\\.htm$)||(.*\\.html$)||(.*\\.php\\.*$)||(.*\\.jsp\\.*$)";
+	private static final String DEFAULT_REGEX = "(\\S+\\.htm\\S*)||(\\S+\\.html\\S*)||(\\S+\\.php\\S*)||(\\S+\\.jsp\\S*)";
 	
 	/** Logger */
     private static Logger logger = Logger.getLogger( CrawlerContentProvider.class );
@@ -63,16 +65,46 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 		// Setup the crawler
 		crawler = new Crawler();
 		
-		if (getInitParams().getProperty("server-filter") != null)
-			crawler.setLinkFilter(
-					LinkFilterUtil.and(
-							new ServerFilter(
-									getInitParams().getProperty("server-filter") + 
-									getInitParams().getProperty("path-filter", "/") ),
-							new RegularExpressionFilter(
-									getInitParams().getProperty("link-filter", DEFAULT_REGEX) )
-							)
+		ArrayList<ILinkFilter> fCol = new ArrayList<ILinkFilter>();
+		
+		if (getInitParams().getProperty("server-filter") != null) 
+			fCol.add(new ServerFilter(
+					getInitParams().getProperty("server-filter") + 
+					getInitParams().getProperty("path-filter", "/") 
+				)
+			);
+			
+		if  (getInitParams().getProperty("link-exclude-filter") != null)
+			fCol.add(LinkFilterUtil.not(
+					new RegularExpressionFilter(
+							getInitParams().getProperty("link-exclude-filter") 
+					)
+				)
+			);
+		
+		fCol.add(new RegularExpressionFilter(
+				getInitParams().getProperty("link-filter", DEFAULT_REGEX) 
+			)
+		);
+			
+		switch (fCol.size()) {
+			case 3:
+				crawler.setLinkFilter(
+						LinkFilterUtil.and(
+							fCol.get(0), 
+							LinkFilterUtil.and(fCol.get(1), fCol.get(2))
+						)
 					);
+				break;
+			case 2:
+				crawler.setLinkFilter(
+						LinkFilterUtil.and(fCol.get(0), fCol.get(1))
+					);
+				break;
+			default:
+				crawler.setLinkFilter(fCol.get(0));
+				break;
+		}	
 		
 		crawler.setModel(
 				new MaxDepthModel(Integer.valueOf(getInitParams().getProperty("maxdepth-filter", "2"))) );
