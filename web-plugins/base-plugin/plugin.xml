@@ -39,6 +39,11 @@
 			<param-name>link-filter</param-name>
 			<param-value><!-- Any regular expression --></param-value>
 		</init-param>
+				<init-param>
+			<!-- Optional filter to define the links to crawl -->
+			<param-name>link-exclude-filter</param-name>
+			<param-value><!-- Any regular expression --></param-value>
+		</init-param>
 		<init-param>
 			<!-- Optional filter to specify the crawl depth. Default is 2 -->
 			<param-name>maxdepth-filter</param-name>
