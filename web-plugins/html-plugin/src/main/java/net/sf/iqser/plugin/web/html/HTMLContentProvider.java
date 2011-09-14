@@ -19,6 +19,7 @@ import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
 import org.htmlparser.filters.AndFilter;
 import org.htmlparser.filters.HasAttributeFilter;
+import org.htmlparser.filters.NodeClassFilter;
 import org.htmlparser.filters.NotFilter;
 import org.htmlparser.filters.OrFilter;
 import org.htmlparser.filters.RegexFilter;
@@ -28,6 +29,7 @@ import org.htmlparser.lexer.Page;
 import org.htmlparser.lexer.Source;
 import org.htmlparser.nodes.TagNode;
 import org.htmlparser.tags.MetaTag;
+import org.htmlparser.tags.TitleTag;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 import org.htmlparser.util.SimpleNodeIterator;
@@ -77,6 +79,23 @@ public class HTMLContentProvider extends CrawlerContentProvider {
 			// Setting the attributes including fulltext
 			if (item != null) {
 				createContentAttributes(c, item);
+				
+			} else {
+				NodeList list = parser.parse(null);
+				Node node = list.elementAt(0);
+				
+				if (node != null) {
+					c.setFulltext(StringEscapeUtils.unescapeHtml(node.toPlainTextString()));
+					
+					NodeList title = node.getChildren().extractAllNodesThatMatch(
+							new NodeClassFilter(TitleTag.class), true);
+					
+					if (title.size() > 0) {
+						c.addAttribute(new Attribute(
+								"Title", ((TitleTag)title.elementAt(0)).getTitle(), 
+								Attribute.ATTRIBUTE_TYPE_TEXT, true));
+					}
+				}
 			}
 			
 		} catch (ParserException e) {
