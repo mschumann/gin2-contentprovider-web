@@ -11,6 +11,8 @@ import org.htmlparser.filters.HasAttributeFilter;
  */
 public class RegExHasAttributeFilter extends HasAttributeFilter {
 	
+	private static final long serialVersionUID = 2654638224011366276L;
+
 	public RegExHasAttributeFilter() {
 		super();
 	}

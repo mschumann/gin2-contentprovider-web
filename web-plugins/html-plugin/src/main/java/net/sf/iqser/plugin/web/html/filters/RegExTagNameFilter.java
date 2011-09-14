@@ -10,6 +10,10 @@ import org.htmlparser.Tag;
  */
 public class RegExTagNameFilter implements NodeFilter{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1149925710166995095L;
 	private String pattern;
 
 	public RegExTagNameFilter(String pattern) {
