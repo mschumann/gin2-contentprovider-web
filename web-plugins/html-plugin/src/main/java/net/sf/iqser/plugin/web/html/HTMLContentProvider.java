@@ -324,10 +324,11 @@ public class HTMLContentProvider extends CrawlerContentProvider {
 				String keyAttr = getInitParams().getProperty("key-attributes");
 				if (keyAttr != null && (keyAttr.indexOf("[" + name + "]") == -1))
 					flag = false;
-						
-				c.addAttribute(new Attribute(name, value, type, flag));
-				
-				logger.debug("Add attribute " + name + ": " + value);
+					
+				if (!value.isEmpty()) {
+					c.addAttribute(new Attribute(name, value, type, flag));
+					logger.debug("Add attribute " + name + ": " + value);
+				}
 			}
 		}
 		

@@ -227,12 +227,11 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 				} catch (IOException ioe) {
 					logger.error("Couldn't open connection for " + s + " - " + ioe.getMessage());
 					
-					stmt2 = conn.createStatement();
-					stmt2.executeUpdate("DELETE FROM documents WHERE url='" + s + "'" +
-							" AND provider='" + getId() + "'");
-					
 					try {
 						this.removeContent(rs.getString("url"));
+						stmt2 = conn.createStatement();
+						stmt2.executeUpdate("DELETE FROM documents WHERE url='" + s + "'" +
+								" AND provider='" + getId() + "'");
 					} catch (IQserException iqe) {
 						logger.error("Couldn't delete object " + s + " - " + iqe.getMessage());
 					}
@@ -326,17 +325,17 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 								String.valueOf(System.currentTimeMillis()) +
 								" WHERE id=" + rs.getString("id"));
 					} else {
+						this.updateContent(getContent(link));
 						stmt.executeUpdate("UPDATE documents SET checksum=" + checksum1 +
 								", checked=" + String.valueOf(System.currentTimeMillis()) +
 								" WHERE id=" + rs.getString("id"));
-						this.updateContent(getContent(link));
 					}
 					
 				} else {
+					this.addContent(getContent(link));
 					stmt.executeUpdate("INSERT INTO documents VALUES " + 
 							"(DEFAULT, '" + link + "', " + checksum1 +
 							", '" + getId() + "', " + String.valueOf(System.currentTimeMillis()) + ")");
-					this.addContent(getContent(link));
 				}
 				
 			} catch (SQLException e) {
