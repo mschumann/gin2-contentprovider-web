@@ -62,6 +62,11 @@
 		</init-param>
 		<!-- Database settings -->
 		<init-param>
+			<param-name>jdbcUrl</param-name>
+			<param-value><!-- jdbc url for a cache database --></param-value>
+		</init-param>
+		<!-- Alternative database setting if no jdbc url is configured -->
+		<init-param>
 			<param-name>protocol</param-name>
 			<param-value><!-- optional protocol, if mySQL is not used --></param-value>
 		</init-param>

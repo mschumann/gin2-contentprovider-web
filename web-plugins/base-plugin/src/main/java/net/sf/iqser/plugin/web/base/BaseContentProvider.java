@@ -48,11 +48,15 @@ public abstract class BaseContentProvider extends AbstractContentProvider {
 		logger.debug("init() called");
 		
 		try {
-			conn = DriverManager.getConnection(
-					getInitParams().getProperty("protocol", "jdbc:mysql:") + 
-					"//" + getInitParams().getProperty("database") + 
-					"?user=" + getInitParams().getProperty("username") +
-					"&password=" + getInitParams().getProperty("password"));
+			if (getInitParams().getProperty("jdbcUrl") != null) {
+				conn = DriverManager.getConnection(getInitParams().getProperty("jdbcUrl"));
+			} else {
+				conn = DriverManager.getConnection(
+						getInitParams().getProperty("protocol", "jdbc:mysql:") + 
+						"//" + getInitParams().getProperty("database") + 
+						"?user=" + getInitParams().getProperty("username") +
+						"&password=" + getInitParams().getProperty("password"));
+			}
 		} catch (SQLException e) {
 			logger.error("Could not establish database connection - " + e.getMessage());
 		}
