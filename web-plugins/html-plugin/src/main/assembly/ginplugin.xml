@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ginplugin xmlns="http://www.iqser.com/schema/ginplugin/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.iqser.com/schema/ginplugin/2.0 http://www.iqser.com/schema/ginplugin/2.0/ginplugin.xsd">
+  <name>HTML Web Content Provider</name>
+  <vendor>iQser GmbH</vendor>
+  <version>###VERSION###</version>
+  <description>This ContentProvider plug-in is able to synchronize HTML web pages or included structured content.</description>
+  <classname type="ContentProvider">
+    <!-- full qualified class name -->
+    net.sf.iqser.plugin.web.html.HTMLContentProvider
+  </classname>
+  <params>
+    <param name="type" type="String" optional="true">The content type of the synchronized web pages. The default value is "Web Page".</param>
+    <param name="charset" type="String" optional="true">The charset name for the HTML page. The detaulf value is "UTF-8".</param>
+    <param name="item-node-filter" type="String" optional="true">A comma seperated pattern, that defines, with xml respectively html node defindes the content object: tag name, attribute name, attribute value, regular expression for text nodes. You can use a star as a wildcard. The default value is html,*,*,*. That means, that the full html page is parsed as a content object.</param>
+    <param name="attribute-node-filter" type="String" optional="true">This parameter defines the nodes, which represents attributes of the synchronized content objects. Each node pattern is seperated by a semicolon. The default value is title,*,*,*;meta,*,*,*. This means, that meta tags and the title tag of an html page is used for attributes of the content object.</param>
+    <param name="key-attributes" type="String" optional="true">A list of attribute names in square brackets, which are handled as key attributes. If no key attribute is defined each attribute is handled as a key attribute.</param>
+  </params>
+</ginplugin>

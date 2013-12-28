@@ -11,23 +11,22 @@ import net.sf.iqser.plugin.web.html.HTMLContentProvider;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.iqser.core.model.Content;
+import com.iqser.gin.developer.test.plugin.provider.ContentProviderTestCase;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 /**
  * A general test case for HTML Content Provider
  * 
- * @author Joerg Wurzer
+ * @author Jörg Wurzer
  *
  */
-public class HTMLContentProviderTest extends TestCase {
-	
-	/** Content provider to test */
-	private HTMLContentProvider provider = null;
+public class HTMLContentProviderTest extends ContentProviderTestCase {
 
-	protected void setUp() throws Exception {
-		super.setUp();
-		
+	@Test
+	public void testCreateContentString() throws Exception {
 		PropertyConfigurator.configure(
 				System.getProperty("user.dir") + "/html-plugin/src/test/res/log4j.properties");
 		
@@ -40,47 +39,93 @@ public class HTMLContentProviderTest extends TestCase {
 		initParams.setProperty("P", "Name");
 		initParams.setProperty("LI", "Description");
 		
-		provider = new HTMLContentProvider();
-		provider.setId("net.sf.iqser.plugin.web.html");
-		provider.setType("Web Page");
+		HTMLContentProvider provider = new HTMLContentProvider();
+		provider.setName("net.sf.iqser.plugin.web.html");
 		provider.setInitParams(initParams);
-		provider.init();
-	}
+		
+		// initialize the test
+		prepare(); 
+		provider.init();		
 
-	protected void tearDown() throws Exception {
-		provider.destroy();
-
-		super.tearDown();
-	}
-
-	public void testGetContentString() {
-		Content c = provider.getContent("http://www.designerfashion.de/Seiten/r2-Felljacke.html");
+		// execute the method(s) under test
+		Content c = provider.createContent("http://www.designerfashion.de/Seiten/r2-Felljacke.html");
 		assertNotNull(c);
 		assertEquals("Web Page", c.getType());
 		assertEquals("net.sf.iqser.plugin.web.html", c.getProvider());
 		assertTrue(c.getContentUrl().endsWith(".html") || c.getContentUrl().endsWith(".htm"));
-		assertEquals(8, c.getAttributes().size());
-		assertEquals("Name", c.getAttributes().iterator().next().getName());
+		assertEquals(6, c.getAttributes().size());
+		assertEquals("NAME", c.getAttributes().iterator().next().getName());
+		
+		// destroy the plug-in
+		provider.destroy();
+	
+		// verify if your expectations were met
+		verify(); 
+
 	}
 
-	public void testGetContentInputStream() {
+	@Test
+	public void testCreateContentInputStream() throws Exception{
+		Properties initParams = new Properties();
+		initParams.setProperty("database", "localhost/crawler");
+		initParams.setProperty("username", "root");
+		initParams.setProperty("password", "master");
+		initParams.setProperty("item-node-filter", "TABLE,*,*,*");
+		initParams.setProperty("attribute-node-filter", "LI,*,*,*;P,*,*,*");  
+		initParams.setProperty("P", "Name");
+		initParams.setProperty("LI", "Description");
+		
+		HTMLContentProvider provider = new HTMLContentProvider();
+		provider.setName("net.sf.iqser.plugin.web.html");
+		provider.setInitParams(initParams);
+		
+		// initialize the test
+		prepare(); 
+		provider.init();
+		
+		// execute test
 		try {
 			URL url = new URL("http://www.designerfashion.de/Seiten/r2-Felljacke.html");
 			InputStream in = url.openStream();
-			Content c = provider.getContent(in);
+			Content c = provider.createContent(in);
 			assertNotNull(c);
 			assertEquals("Web Page", c.getType());
 			assertEquals("net.sf.iqser.plugin.web.html", c.getProvider());
-			assertEquals(8, c.getAttributes().size());
-			assertEquals("Name", c.getAttributes().iterator().next().getName());
+			assertEquals(6, c.getAttributes().size());
+			assertEquals("NAME", c.getAttributes().iterator().next().getName());
 		} catch (MalformedURLException e) {
 			fail("Malformed URL - " + e.getMessage());
 		} catch (IOException e) {
 			fail("Couldn't read source - " + e.getMessage());
 		}
+	
+		// destroy the plug-in
+		provider.destroy();
+	
+		// verify if your expectations were met
+		verify(); 
 	}
 
-	public void testGetBinaryData() {
+	@Test
+	public void testGetBinaryData() throws Exception {
+		Properties initParams = new Properties();
+		initParams.setProperty("database", "localhost/crawler");
+		initParams.setProperty("username", "root");
+		initParams.setProperty("password", "master");
+		initParams.setProperty("item-node-filter", "TABLE,*,*,*");
+		initParams.setProperty("attribute-node-filter", "LI,*,*,*;P,*,*,*");  
+		initParams.setProperty("P", "Name");
+		initParams.setProperty("LI", "Description");
+		
+		HTMLContentProvider provider = new HTMLContentProvider();
+		provider.setName("net.sf.iqser.plugin.web.html");
+		provider.setInitParams(initParams);
+		
+		// initialize the test
+		prepare(); 
+		provider.init();
+		
+		// execute test
 		Content c = new Content();
 		c.setContentUrl("http://www.designerfashion.de/Seiten/r2-Felljacke.html");
 		byte[] byteArr = provider.getBinaryData(c);
@@ -91,6 +136,12 @@ public class HTMLContentProviderTest extends TestCase {
 		assertTrue(page.startsWith("<HTML>  \n<HEAD>\n  " +
 				"<META NAME=\"GENERATOR\" CONTENT=\"Adobe PageMill 3.0 Macintosh\">\n  " +
 				"<TITLE>+++ streetnightwear +++</TITLE>\n</HEAD>"));
+		
+		// destroy the plug-in
+		provider.destroy();
+	
+		// verify if your expectations were met
+		verify(); 
 	}
 
 }

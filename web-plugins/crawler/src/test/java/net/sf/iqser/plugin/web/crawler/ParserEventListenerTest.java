@@ -72,7 +72,7 @@ public class ParserEventListenerTest extends TestCase {
 		
 		Link link1 = new Link("http://www.some-server.com/page1.html");
 		Link link2 = new Link("http://www.some-server.com/page.pdf");
-		Collection<Link> outLinks = new ArrayList();
+		Collection<Link> outLinks = new ArrayList<Link>();
 		outLinks.add(new Link("http//www.some-server.com/page2.html"));
 		
 		PageData page1 = new MockPageData(link1);

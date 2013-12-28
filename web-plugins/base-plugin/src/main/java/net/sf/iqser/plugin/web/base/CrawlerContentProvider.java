@@ -1,7 +1,9 @@
 package net.sf.iqser.plugin.web.base;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,7 +11,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.zip.Adler32;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -17,7 +18,7 @@ import org.apache.log4j.Logger;
 import org.htmlparser.util.NodeList;
 
 import com.iqser.core.exception.IQserException;
-import com.iqser.core.plugin.AbstractContentProvider;
+import com.iqser.core.plugin.provider.AbstractContentProvider;
 import com.torunski.crawler.Crawler;
 import com.torunski.crawler.events.IParserEventListener;
 import com.torunski.crawler.events.ParserEvent;
@@ -37,9 +38,6 @@ import com.torunski.crawler.model.MaxDepthModel;
  */
 public abstract class CrawlerContentProvider extends AbstractContentProvider implements IParserEventListener {
 
-	/** Version ID */
-	private static final long serialVersionUID = 1L;
-	
 	/** Default link filter */
 	private static final String DEFAULT_REGEX = "(\\S+\\.htm\\S*)||(\\S+\\.html\\S*)||(\\S+\\.php\\S*)||(\\S+\\.jsp\\S*)";
 	
@@ -57,7 +55,7 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 
 	/**
 	 * Method sets up the crawler and creates tables in the database to persist 
-	 * harwested links to parse for the implemented content provider.
+	 * harvested links to parse for the implemented content provider.
 	 */
 	public void init() {
 		logger.debug("init() called");
@@ -134,10 +132,10 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 		
 		try {
 			stmt = conn.createStatement();;
-			stmt.execute("CREATE TABLE IF NOT EXISTS documents" +
+			stmt.execute("CREATE TABLE IF NOT EXISTS pages" +
 					"(id INT AUTO_INCREMENT KEY, url VARCHAR(255) NOT NULL, " +
 					"checksum BIGINT NOT NULL, provider VARCHAR(255) NOT NULL, " +
-					"checked BIGINT NOT NULL)");;
+					"checked BIGINT NOT NULL, lastcrawlerstart BIGINT NOT NULL)");;
 		} catch (SQLException e) {
 			logger.debug("Could't create table - " + e.getMessage());
 		}
@@ -167,21 +165,12 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.iqser.core.plugin.AbstractContentProvider#getContentUrls()
-	 */
-	public Collection getContentUrls() {
-		// Not yet implemented decrepated method
-		return null;
-	}
-
 	/**
-	 * Starts the crawler to harwest web links determined by the configuration. 
-	 * Content objects are added and updatet in the implementes event listener of the crawler.
+	 * Starts the crawler to harvest web links determined by the configuration. 
+	 * Content objects are added and updated in the implemented event listener of the crawler.
 	 */
-	public void doSynchonization() {
-		logger.debug("doSynchonization() called");
+	public void doSynchronization() {
+		logger.info("doSynchonization() called");
 		
 		crawlerstart = System.currentTimeMillis();
 		
@@ -198,10 +187,10 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 
 	/*
 	 * The implementation first limits the scope by links, which haven't been checked 
-	 * by the current crawler job. Then each link is checked, wether it exists. 
+	 * by the current crawler job. Then each link is checked, whether it exists. 
 	 */
 	public void doHousekeeping() {
-		logger.debug("doHousekeeping() called");
+		logger.info("doHousekeeping() called");
 		
 		try {
 			URL url = new URL(getInitParams().getProperty("test-url", "http://www.iqser.com"));
@@ -217,27 +206,36 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 		
 		try {
 			stmt1 = conn.createStatement();
-			rs = stmt1.executeQuery("SELECT * FROM documents WHERE checked<" + crawlerstart +
-					" AND provider='" + getId() + "'");
+			rs = stmt1.executeQuery("SELECT * FROM pages WHERE checked < lastcrawlerstart " + 
+					" AND provider='" + getName() + "'");
 			
 			while (rs.next()) {
-				
-				String s = rs.getString("url");
-				
+				String s = rs.getString("url");	
+				URL url;
+				int code = 404;
 				try {
-					URL url = new URL(s);
-					url.openConnection().connect();
-					logger.warn("Not checked by the crawler but still available web content");
-				} catch (IOException ioe) {
-					logger.error("Couldn't open connection for " + s + " - " + ioe.getMessage());
-					
+					url = new URL(s);
+					HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
+					urlConn.setRequestMethod("HEAD");
+				    code = urlConn.getResponseCode();  
+				} catch (MalformedURLException e) {
+					logger.warn("Invalid URL " + s, e);
+				} catch (ProtocolException e) {
+					logger.error("Invalid protocol", e);
+				} catch (IOException e) {
+					logger.error("Failure while checking URL " + s, e);
+				}
+				   
+				if (code != HttpURLConnection.HTTP_OK) {			    
+					logger.info("Deleted web source " + s);
+				
 					try {
 						this.removeContent(rs.getString("url"));
 						stmt2 = conn.createStatement();
-						stmt2.executeUpdate("DELETE FROM documents WHERE url='" + s + "'" +
-								" AND provider='" + getId() + "'");
+						stmt2.executeUpdate("DELETE FROM pages WHERE url='" + s + "'" +
+									" AND provider='" + getName() + "'");
 					} catch (IQserException iqe) {
-						logger.error("Couldn't delete object " + s + " - " + iqe.getMessage());
+							logger.error("Couldn't delete object " + s + " - " + iqe.getMessage());
 					}
 				}
 			}	
@@ -317,7 +315,7 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 			
 			try {
 				stmt = conn.createStatement();
-				rs = stmt.executeQuery("SELECT * FROM documents WHERE url='" + link + "'");
+				rs = stmt.executeQuery("SELECT * FROM pages WHERE url='" + link + "'");
 				
 				// Has the source already be parsed?
 				if (rs.first()) {
@@ -325,21 +323,24 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 			
 					// Has the source been modified?
 					if (checksum1 == checksum2) {
-						stmt.executeUpdate("UPDATE documents SET checked=" + 
+						stmt.executeUpdate("UPDATE pages SET checked=" + 
 								String.valueOf(System.currentTimeMillis()) +
+								", lastcrawlerstart=" + crawlerstart +
 								" WHERE id=" + rs.getString("id"));
 					} else {
-						this.updateContent(getContent(link));
-						stmt.executeUpdate("UPDATE documents SET checksum=" + checksum1 +
+						this.updateContent(createContent(link));
+						stmt.executeUpdate("UPDATE pages SET checksum=" + checksum1 +
 								", checked=" + String.valueOf(System.currentTimeMillis()) +
+								", lastcrawlerstart=" + crawlerstart +
 								" WHERE id=" + rs.getString("id"));
 					}
 					
 				} else {
-					this.addContent(getContent(link));
-					stmt.executeUpdate("INSERT INTO documents VALUES " + 
+					this.addContent(createContent(link));
+					stmt.executeUpdate("INSERT INTO pages VALUES " + 
 							"(DEFAULT, '" + link + "', " + checksum1 +
-							", '" + getId() + "', " + String.valueOf(System.currentTimeMillis()) + ")");
+							", '" + getName() + "', " + String.valueOf(System.currentTimeMillis()) + 
+							", " + crawlerstart + ")");
 				}
 				
 			} catch (SQLException e) {
@@ -370,7 +371,7 @@ public abstract class CrawlerContentProvider extends AbstractContentProvider imp
 	
 	/**
 	 * Checks weather a link has to be parsed by the provider. 
-	 * This is determined by the initial parameters in the configuration of the plugin.
+	 * This is determined by the initial parameters in the configuration of the plug-in.
 	 */
 	private boolean isContentLink(String link) {
 		if (link.matches(getInitParams().getProperty("item-filter", DEFAULT_REGEX)))

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ginplugin xmlns="http://www.iqser.com/schema/ginplugin/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.iqser.com/schema/ginplugin/2.0 http://www.iqser.com/schema/ginplugin/2.0/ginplugin.xsd">
+  <name>PDF Web Content Provider</name>
+  <vendor>iQser GmbH</vendor>
+  <version>###VERSION###</version>
+  <description>This ContentProvider plug-in is able to synchronize PDF files from web sources.</description>
+  <classname type="ContentProvider">net.sf.iqser.plugin.web.html.PDFContentProvider</classname>
+  <params>
+    <param name="Type" type="String" optional="true">The type of the document. The default value is PDF Document.</param>
+    <param name="Title" type="String" optional="true">Optional mapping of this metadata.</param>
+    <param name="Author" type="String" optional="true">Optional mapping of this metadata.</param>
+    <param name="Subject" type="String" optional="true">Optional mapping of this metadata.</param>
+    <param name="Keywords" type="String" optional="true">Optional mapping of this metadata.</param>
+    <param name="Creator" type="String" optional="true">Optional mapping of this metadata.</param>
+    <param name="Producer" type="String" optional="true">Optional mapping of this metadata.</param>
+    <param name="Created" type="String" optional="true">Optional mapping of this metadata.</param>
+  </params>
+</ginplugin>
+

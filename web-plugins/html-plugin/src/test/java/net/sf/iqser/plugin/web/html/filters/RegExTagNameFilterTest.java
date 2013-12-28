@@ -23,8 +23,8 @@ public class RegExTagNameFilterTest extends TestCase {
 		url = "http://www.eda.admin.ch/eda/en/home/dfa/policy.html";
 		parse(url, filter);
 		
-		url = "http://www.edi.admin.ch/dokumentation/00334/index.html?lang=en";
-		parse(url, filter);
+//		url = "http://www.edi.admin.ch/dokumentation/00334/index.html?lang=en";
+//		parse(url, filter);
 	} 
 	
 	protected void parse(String url, NodeFilter filter) throws ParserException{

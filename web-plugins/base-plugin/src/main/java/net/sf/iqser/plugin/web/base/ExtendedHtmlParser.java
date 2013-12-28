@@ -79,13 +79,13 @@ public class ExtendedHtmlParser implements IParser {
     /**
      * @see com.torunski.crawler.parser.IParser#parse(com.torunski.crawler.parser.PageData, com.torunski.crawler.filter.ILinkFilter)
      */
-    public Collection parse(PageData pageData, ILinkFilter linkFilter) {
+    public Collection<String> parse(PageData pageData, ILinkFilter linkFilter) {
     	if (!(pageData instanceof PageDataHtmlParser)) {
     		log.warn("Type mismatch in " + this.getClass().getName());
-    		return Collections.EMPTY_SET;
+    		return Collections.emptySet();
     	}
     	
-        Collection links = new HashSet(); // use HashSet to avoid duplicates
+        Collection<String> links = new HashSet<String>(); // use HashSet to avoid duplicates
 
         NodeList list = (NodeList) pageData.getData();
         for (int i = 0; i < list.size(); i++) {

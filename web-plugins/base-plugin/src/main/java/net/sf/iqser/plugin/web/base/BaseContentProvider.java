@@ -1,17 +1,18 @@
 package net.sf.iqser.plugin.web.base;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
 import org.apache.log4j.Logger;
 import com.iqser.core.exception.IQserException;
-import com.iqser.core.plugin.AbstractContentProvider;
+import com.iqser.core.plugin.provider.AbstractContentProvider;
 
 /**
  * A base content provider for the iQser GIN Platform 
@@ -21,9 +22,6 @@ import com.iqser.core.plugin.AbstractContentProvider;
  * @author Joerg Wurzer
  */
 public abstract class BaseContentProvider extends AbstractContentProvider {
-
-	/** Serial ID */
-	private static final long serialVersionUID = 9101206034678952772L;
 
 	/** Default link filter */
 	private static final String DEFAULT_REGEX = "(.*\\.htm$)||(.*\\.html$)||(.*\\.php\\.*$)||(.*\\.jsp\\.*$)";
@@ -75,12 +73,12 @@ public abstract class BaseContentProvider extends AbstractContentProvider {
 					"maxdepth INT NOT NULL, lastcrawlerstart BIGINT NOT NULL, " +
 					"lastsyncstart BIGINT NOT NULL)");
 			
-			rs = stmt.executeQuery("SELECT * FROM providers WHERE provider='" + getId() + "'");
+			rs = stmt.executeQuery("SELECT * FROM providers WHERE provider='" + getName() + "'");
 			
 			if (!rs.first()) {
 				if (getInitParams().getProperty("server-filter") != null) {
 					stmt.executeUpdate("INSERT INTO providers VALUES " +
-							"(DEFAULT, '" + getId() + "', '" + 
+							"(DEFAULT, '" + getName() + "', '" + 
 							getInitParams().getProperty("start-server") + "', '" +
 							getInitParams().getProperty("start-path", "/") + "', '" +
 							getInitParams().getProperty("server-filter", "none") + "', '" +
@@ -123,59 +121,12 @@ public abstract class BaseContentProvider extends AbstractContentProvider {
 	}
 
 	/**
-	 * Uses the collected links from the external crawler in the database 
-	 * and returns a collection of URLs as Strings.
-	 */
-	public Collection getContentUrls() {
-		logger.debug("getContentUrls() called");
-		
-		Collection cl = new ArrayList();
-		
-		Statement stmt = null;
-		ResultSet rs   = null;
-		
-		try {
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery("SELECT url FROM documents WHERE provider='" + getId() + "'");
-			
-			while (rs.next()) {
-				
-				cl.add(rs.getString("url"));
-			}	
-		} catch (SQLException sqle) {
-			logger.error("Couldn't perform sql query or update - " + sqle.getMessage());
-		} 
-		
-		finally {
-		    if (rs != null) {
-		        try {
-		            rs.close();
-		        } catch (SQLException sqlEx) { } // ignore
-		        
-		        rs = null;
-		    }
-		    
-		    if (stmt != null) {
-		        try {
-		            stmt.close();
-		        } catch (SQLException sqlEx) { } // ignore
-		        
-		        stmt = null;
-		    }
-		}
-		
-		logger.debug("getContentUrls() finished");
-		
-		return cl;
-	}
-
-	/**
 	 * Uses the collected links from the external crawler in the database.
 	 */
-	public void doSynchonization() {
-		logger.debug("doSynchonization() called");
+	public void doSynchronization() {
+		logger.info("doSynchonization() called");
 		
-		lastSyncStart = System.currentTimeMillis();
+		long currentSyncStart = System.currentTimeMillis();
 		
 		Statement stmt = null;
 		ResultSet rs   = null;
@@ -183,17 +134,17 @@ public abstract class BaseContentProvider extends AbstractContentProvider {
 		try {
 			stmt = conn.createStatement();
 			
-			rs = stmt.executeQuery("SELECT * FROM providers WHERE provider='" + getId() + "'");
+			rs = stmt.executeQuery("SELECT * FROM providers WHERE provider='" + getName() + "'");
 			rs.first();
 			
 			lastCrawlerStart = rs.getLong("lastcrawlerstart");
 			lastSyncStart = rs.getLong("lastsyncstart");
 			
 			if (lastSyncStart > lastCrawlerStart) 
-				rs = stmt.executeQuery("SELECT url FROM documents WHERE provider='" + getId() + "'" +
+				rs = stmt.executeQuery("SELECT url FROM documents WHERE provider='" + getName() + "'" +
 						" AND checked>" + lastSyncStart);
 			else
-				rs = stmt.executeQuery("SELECT url FROM documents WHERE provider='" + getId() + "'" +
+				rs = stmt.executeQuery("SELECT url FROM documents WHERE provider='" + getName() + "'" +
 						" AND checked>" + lastCrawlerStart);
 			
 			while (rs.next()) {
@@ -202,17 +153,17 @@ public abstract class BaseContentProvider extends AbstractContentProvider {
 				
 				try {
 					if (isExistingContent(url)) {
-						updateContent(getContent(url));
+						updateContent(createContent(url));
 					} else {
-						addContent(getContent(url));
+						addContent(createContent(url));
 					}
 				} catch (IQserException e) {
 					logger.error("Couldn't verify, if content " + url + " does exist - " + e.getMessage());
 				}
 			}
 			
-			stmt.executeUpdate("UPDATE providers SET lastsyncstart=" + lastSyncStart + 
-					" WHERE provider='" + getId() + "'");
+			stmt.executeUpdate("UPDATE providers SET lastsyncstart=" + currentSyncStart + 
+					" WHERE provider='" + getName() + "'");
 		} catch (SQLException sqle) {
 			logger.error("Couldn't perform sql query or update - " + sqle.getMessage());
 		} 
@@ -244,9 +195,9 @@ public abstract class BaseContentProvider extends AbstractContentProvider {
 	 * by the last crawler job. Then each link is checked, wether it exists. 
 	 */
 	public void doHousekeeping() {
-		logger.debug("doHousekeeping() called");
+		logger.info("doHousekeeping() called");
 		
-		// Tests, wether internet access exists
+		// Tests, whether Internet access exists
 		try {
 			URL url = new URL(getInitParams().getProperty("test-url", "http://www.iqser.com"));
 			url.openConnection().connect();
@@ -261,23 +212,41 @@ public abstract class BaseContentProvider extends AbstractContentProvider {
 		
 		try {
 			stmt1 = conn.createStatement();
+			
+			rs = stmt1.executeQuery("SELECT * FROM providers WHERE provider='" + getName() + "'");
+			rs.first();
+			
+			lastCrawlerStart = rs.getLong("lastcrawlerstart");
+			lastSyncStart = rs.getLong("lastsyncstart");
+			
 			rs = stmt1.executeQuery("SELECT * FROM documents WHERE checked<" + lastCrawlerStart +
-					" AND provider='" + getId() + "'");
+					" AND provider='" + getName() + "'");
 			
 			while (rs.next()) {
 				
 				String s = rs.getString("url");
 				
+				URL url;
+				int code = 404;
 				try {
-					URL url = new URL(s);
-					url.openConnection().connect();
-					logger.warn("Not checked by the crawler but still available web content");
-				} catch (IOException ioe) {
-					logger.error("Couldn't open connection for " + s + " - " + ioe.getMessage());
+					url = new URL(s);
+					HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
+					urlConn.setRequestMethod("HEAD");
+				    code = urlConn.getResponseCode();  
+				} catch (MalformedURLException e) {
+					logger.warn("Invalid URL " + s, e);
+				} catch (ProtocolException e) {
+					logger.error("Invalid protocol", e);
+				} catch (IOException e) {
+					logger.error("Failure while checking URL " + s, e);
+				}
+ 
+			    if (code != HttpURLConnection.HTTP_OK) {			    
+					logger.info("Deleted web source " + s);
 					
 					stmt2 = conn.createStatement();
 					stmt2.executeUpdate("DELETE FROM documents WHERE url='" + s + "'" +
-							" AND provider='" + getId() + "'");
+							" AND provider='" + getName() + "'");
 					
 					try {
 						this.removeContent(rs.getString("url"));

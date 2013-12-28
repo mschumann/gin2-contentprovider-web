@@ -15,7 +15,7 @@ import junit.framework.TestCase;
 /**
  * A generic test case of the Crawler Manager.
  * 
- * @author Joerg Wurzer
+ * @author Jörg Wurzer
  *
  */
 public class CrawlerManagerTest extends TestCase {
@@ -23,7 +23,7 @@ public class CrawlerManagerTest extends TestCase {
 	/** Crawler Manager to test */
 	private CrawlerManager manager = null;
 	
-	/** Database connection for crwaled documents and registered provider */
+	/** Database connection for crawled documents and registered provider */
 	private Connection conn = null;
 	
 	protected void setUp() throws Exception {

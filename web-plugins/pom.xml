@@ -4,22 +4,25 @@
 
 	<groupId>net.sf.iqser.plugin.web</groupId>
 	<artifactId>web-plugins</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>2.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Web ContentProvider for iQser GIN</name>
 	<description>The goal of this project is to provide a reusable library to transform any web page or data to content objects by generic, configurable ContentProvider plugins for the iQser GIN Semantic Middleware (www.iqser.com).
 	</description>
 	<url>http://iqserwebplugin.sourceforge.net</url>
 	
-		<scm>
+	<scm>
 		<connection>
 			scm:svn:http://iqserwebpluginsourceforge.net/viewvc/iqserwebplugin/trunk
 		</connection>
 		<developerConnection>
 			scm:svn:https://iqserwebplugin.svn.sourceforge.net/svnroot/iqserwebplugin/trunk
 		</developerConnection>
-		<url>http://iqserwebplugin.svn.sourceforge.net/viewvc/iqserwebplugin</url>
+		<url>
+			http://iqserwebplugin.svn.sourceforge.net/viewvc/iqserwebplugin
+		</url>
 	</scm>
+	
 	<licenses>
 		<license>
 			<name>Apache 2</name>
@@ -29,11 +32,10 @@
 		</license>
 	</licenses>
 	
-	
-<properties>
+	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<iqser.version>1.5</iqser.version>
-		<compileSource>1.5</compileSource>
+		<iqser.version>2.0</iqser.version>
+		<compileSource>1.6</compileSource>
 		<sourceforge.artifact>${project.build.directory}/${project.build.finalName}</sourceforge.artifact>
 		<sourceforge.upload>${sf.username},iqserwebplugin@frs.sourceforge.net:/home/pfs/project/i/iq/iqserwebplugin</sourceforge.upload>
 	</properties>
@@ -54,34 +56,106 @@
 	
 	<organization>
 		<name>IQser GmbH</name>
-		<url>http://www.iqser.net</url>
+		<url>http://www.iqser.com</url>
 	</organization>
 	
 	<build>
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-webdav</artifactId>
-				<version>1.0-beta-1</version>
-			</extension>
-		</extensions>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
 				<configuration>
 					<fork>true</fork>
-					<source>5</source>
-					<target>5</target>
+					<source>${compileSource}</source>
+					<target>${compileSource}</target>
 				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.9</version>
 				<configuration>
-          			<skipTests>true</skipTests>
-          			<includes>
-- 						<include>**/*Test.java</include>
-- 					</includes>
+					<forkMode>always</forkMode>
+					<childDelegation>false</childDelegation>
+					<argLine>-Djava.awt.headless=true</argLine>
+					<includes>
+						<include>**/*Test.java</include>
+					</includes>
+					<excludes>
+						<exclude>**/*TestCase.java</exclude>
+					</excludes>
+					<systemProperties>
+						<property>
+							<name>testdata.dir</name>
+							<value>${basedir}/testdata</value>
+						</property>
+					</systemProperties>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>2.7.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.9.1</version>
+				<dependencies>
+					<dependency>
+						<groupId>com.iqser</groupId>
+						<artifactId>iqser-qa</artifactId>
+						<version>1.1</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>checkstyle</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<configLocation>checkstyle/checkstyle.xml</configLocation>
+					<failsOnError>true</failsOnError>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.5.2</version>
+				<configuration>
+					<check>
+						<branchRate>75</branchRate>
+						<lineRate>70</lineRate>
+						<haltOnFailure>false</haltOnFailure>
+						<totalBranchRate>75</totalBranchRate>
+						<totalLineRate>70</totalLineRate>
+						<packageLineRate>70</packageLineRate>
+						<packageBranchRate>75</packageBranchRate>
+					</check>
+					<instrumentation>
+						<excludes>
+							<exclude>**/*$*</exclude>
+							<exclude>**/*Test.class</exclude>
+							<exclude>**/*Exception.class</exclude>
+						</excludes>
+					</instrumentation>
+					<formats>
+						<format>html</format>
+						<format>xml</format>
+					</formats>
+				</configuration>
+				<executions>
+					<execution>
+						<id>cobertura</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>cobertura</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -93,13 +167,27 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.7</version>
+				<version>2.9.1</version>
 				<executions>
+					<execution>
+						<id>javadoc-site</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>javadoc</goal>
+						</goals>
+					</execution>
 					<execution>
 						<id>javadoc-jar</id>
 						<phase>package</phase>
 						<goals>
 							<goal>aggregate-jar</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>single-javadoc-jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -113,7 +201,7 @@
 						<id>attach-sources</id>
 						<phase>verify</phase>
 						<goals>
-							<goal>jar-no-fork</goal>
+							<goal>jar</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -134,20 +222,71 @@
 				</dependencies>
 				<executions>
 					<execution>
+						<id>publish_gin</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<echo message="Copy GIN Archive (${project.build.finalName})" />
+								<scp todir="${sourceforge.upload}" password="${sf.password}" trust="true">
+									<fileset dir="${project.build.directory}/">
+										<include name="${project.build.finalName}*.gin" />
+									</fileset>
+								</scp>
+							</target>
+						</configuration>
+					</execution>
+					<execution>
 						<id>publish_jar</id>
 						<phase>deploy</phase>
 						<goals>
 							<goal>run</goal>
 						</goals>
 						<configuration>
-							<tasks>
-								<scp todir="${sourceforge.upload}" password="${sf.password}"
-									trust="true">
-									<fileset dir="${project.build.directory}">
-										<include name="${project.build.finalName}*.jar" />
+							<target>
+								<echo message="Copy JAR (${project.build.finalName}) to sourceforge" />
+								<scp todir="${sourceforge.upload}" password="${sf.password}" trust="true">
+									<fileset dir="${project.build.directory}/">
+										<include name="${project.build.finalName}.jar" />
 									</fileset>
 								</scp>
-							</tasks>
+							</target>
+						</configuration>
+					</execution>
+					<execution>
+						<id>publish_sources</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<echo message="Copy ${project.build.finalName}-sources.jar to sourceforge" />
+								<scp todir="${sourceforge.upload}" password="${sf.password}" trust="true">
+									<fileset dir="${project.build.directory}/">
+										<include name="${project.build.finalName}-sources.jar" />
+									</fileset>
+								</scp>
+							</target>
+						</configuration>
+					</execution>
+					<execution>
+						<id>publish_javadoc</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<echo message="Copy javadoc Archive (${project.build.finalName}) to sourceforge." />
+								<scp todir="${sourceforge.upload}" password="${sf.password}" trust="true">
+									<fileset dir="${project.build.directory}/">
+										<include name="${project.build.finalName}-javadoc.jar" />
+									</fileset>
+								</scp>
+							</target>
 						</configuration>
 					</execution>
 				</executions>
@@ -155,12 +294,139 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<version>2.1.1</version>
+				<version>2.2</version>
+				<dependencies>
+					<!-- additional dependencies required by "source-class" implementations are added here -->
+					<dependency>
+						<groupId>org.tinyjee.dim</groupId>
+						<artifactId>doxia-include-macro</artifactId>
+						<version>1.1</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<id>generate_site</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>site</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>deploy_site</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>deploy</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
-			
-			
+			<!-- Optionally initializes & configures the macro (in particular adds support for multimodule projects ) -->
+			<!-- This also fixes the basedir issue in multimodule builds (see http://jira.codehaus.org/browse/DOXIA-373) -->
+			<plugin>
+				<groupId>org.tinyjee.dim</groupId>
+				<artifactId>doxia-include-macro</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<id>initialize-doxia-include-macro</id>
+						<!-- Use "initialize" when the 'site' was not given as 'phase'. -->
+						<!-- phase>initialize</phase -->
+						<phase>pre-site</phase>
+						<goals>
+							<goal>initialize</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-webdav</artifactId>
+				<version>1.0-beta-1</version>
+			</extension>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>2.4</version>
+			</extension>
+		</extensions>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-checkstyle-plugin	</artifactId>
+										<versionRange>[2.9.1,)</versionRange>
+										<goals>
+											<goal>checkstyle</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
+	
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.5.2</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>2.4.3</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<configuration>
+					<aggregate>true</aggregate>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<configuration>
+					<targetJdk>${compileSource}</targetJdk>
+				</configuration>
+				<version>2.7.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>taglist-maven-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<tags>TODO, @todo, FIXME, DOCUMENT ME</tags>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<configLocation>checkstyle/checkstyle.xml</configLocation>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 	
 	<modules>
 		<module>base-plugin</module>
@@ -169,7 +435,7 @@
 		<module>crawler</module>
 	</modules>
 	
-<repositories>
+	<repositories>
 		<repository>
 			<id>iqser_release</id>
 			<name>Nexus Mirror</name>
@@ -182,7 +448,7 @@
 			</snapshots>
 		</repository>
 		<repository>
-			<id>iqserwebplugin-repo</id>
+			<id>iqserwebplugin-repo-snapshot</id>
 			<name>iQser Web Plugin Repository</name>
 			<url>http://iqserwebplugin.sourceforge.net/maven2-snap</url>
 			<releases>
@@ -193,7 +459,7 @@
 			</snapshots>
 		</repository>
 		<repository>
-			<id>iqserwebplugin-repo</id>
+			<id>iqserwebplugin-repo-release</id>
 			<name>iQser Web Plugin Repository</name>
 			<url>http://iqserwebplugin.sourceforge.net/maven2</url>
 			<releases>
@@ -208,6 +474,7 @@
  			<url>http://dist.wso2.org/maven2/</url>  
 		</repository>  
 	</repositories>
+	
 	<pluginRepositories>
 		<pluginRepository>
 			<id>iqser_release</id>
@@ -221,14 +488,11 @@
 		</pluginRepository>
 	</pluginRepositories>
 		
-	
-	
-
 	<dependencies>
     	<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
+			<version>4.8.2</version>
 			<scope>test</scope>
     	</dependency>	
  		<dependency>
@@ -236,53 +500,60 @@
 			<artifactId>iqser-core-api</artifactId>
 			<version>${iqser.version}</version>
 		</dependency>
-		
-		 <dependency>
+		<dependency>
 			<groupId>com.iqser.core</groupId>
 			<artifactId>iqser-core-plugin</artifactId>
 			<version>${iqser.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.iqser.core</groupId>
+			<artifactId>iqser-core-test</artifactId>
+			<version>${iqser.version}</version>
+			<type>jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.iqser.gin.developer</groupId>
+			<artifactId>plugin-test-api</artifactId>
+			<version>${iqser.version}</version>
+			<scope>test</scope>
 		</dependency>
   		<dependency>
  			<groupId>com.torunski.crawler</groupId>
   			<artifactId>crawler</artifactId>
   			<version>0.6.0</version>
 		</dependency>
-		
 		<dependency>
 			<groupId>org.htmlparser</groupId>
 			<artifactId>htmlparser</artifactId>
 			<version>2.1</version>
 		</dependency>
-		
 		<dependency>
     		<groupId>mysql</groupId>
     		<artifactId>mysql-connector-java</artifactId>
     		<version>5.1.10</version>
     		<scope>provided</scope>
 	 	</dependency>
-	 	
 		<dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.4</version>
             <scope>provided</scope>
         </dependency>
-		   
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.14</version>
             <scope>provided</scope>
         </dependency>
-        
         <dependency>
  			<groupId>org.apache.pdfbox</groupId>
  			<artifactId>pdfbox</artifactId>
 			<version>1.2.1</version>
 		</dependency>
-
 	</dependencies>
-  <distributionManagement>
+	
+    <distributionManagement>
 		<repository>
 			<id>iqserwebplugin-repo</id>
 			<name>iQser Web Plugin Repository</name>
@@ -305,4 +576,5 @@
 			</url>
 		</site>
 	</distributionManagement>
+
 </project>

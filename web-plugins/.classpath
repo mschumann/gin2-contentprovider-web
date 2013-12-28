@@ -8,7 +8,12 @@
 	<classpathentry kind="src" path="crawler/src/main/java"/>
 	<classpathentry kind="src" path="base-plugin/src/test/java"/>
 	<classpathentry kind="src" path="crawler/src/test/java"/>
-	<classpathentry kind="con" path="org.eclipse.iam.jdt.core.mavenClasspathContainer"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/Java SE 6 (MacOS X Default)"/>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER"/>
+	<classpathentry kind="src" path=".apt_generated">
+		<attributes>
+			<attribute name="optional" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>

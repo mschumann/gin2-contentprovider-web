@@ -30,7 +30,7 @@ public class CrawlerManager {
 	/** The Logger */
 	private static Logger logger = Logger.getLogger( CrawlerManager.class );
 	
-	/** The databse Connection */
+	/** The database Connection */
 	private Connection conn = null;
 	private String dbProtocol = null;
 	private String dbPath = null;

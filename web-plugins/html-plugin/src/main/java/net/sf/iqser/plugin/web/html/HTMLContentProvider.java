@@ -8,7 +8,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Properties;
 
 import net.sf.iqser.plugin.web.base.CrawlerContentProvider;
 import net.sf.iqser.plugin.web.html.filters.RegExHasAttributeFilter;
@@ -34,9 +33,9 @@ import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 import org.htmlparser.util.SimpleNodeIterator;
 
-import com.iqser.core.event.Event;
 import com.iqser.core.model.Attribute;
 import com.iqser.core.model.Content;
+import com.iqser.core.model.Parameter;
 
 /**
  * HTML Content Provider of the iQser Web Content Provider Family
@@ -45,25 +44,22 @@ import com.iqser.core.model.Content;
  * 
  */
 public class HTMLContentProvider extends CrawlerContentProvider {
-
-	/** Serial number */
-	private static final long serialVersionUID = 1L;
 	
 	/** Logger */
     private static Logger logger = Logger.getLogger( HTMLContentProvider.class );
 
 	@Override
-	public Content getContent(String url) {
-		logger.debug("getContent(String) called for " + url);
+	public Content createContent(String url) {
+		logger.debug("createContent(String) called for " + url);
 		
 		Content c = new Content();
 
-		// Setting technical metadata
-		c.setProvider(getId());
+		// Setting technical meta data
+		c.setProvider(getName());
 		c.setContentUrl(url);
 		
 		// Setting content type
-		c.setType(getType());
+		c.setType(getInitParams().getProperty("type", "Web Page"));
 		
 		try {
 			Parser parser = new Parser(url);;
@@ -106,16 +102,16 @@ public class HTMLContentProvider extends CrawlerContentProvider {
 	}
 
 	@Override
-	public Content getContent(InputStream in) {
-		logger.debug("getContent(InputStream) called");
+	public Content createContent(InputStream in) {
+		logger.debug("createContent(InputStream) called");
 		
 		Content c = new Content();
 
 		// Setting technical metadata
-		c.setProvider(getId());
+		c.setProvider(getName());
 		
 		// Setting content type
-		c.setType(getType());
+		c.setType(getInitParams().getProperty("type", "Web Page"));
 		
 		try {
 			Page page = new Page(in, getInitParams().getProperty("charset", Page.DEFAULT_CHARSET));
@@ -165,26 +161,21 @@ public class HTMLContentProvider extends CrawlerContentProvider {
 	}
 
 	@Override
-	public Collection getActions(Content arg0) {
+	public Collection<String> getActions(Content arg0) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	public void performAction(String arg0, Content arg1) {
-		// TODO Auto-generated method stub
 	
+	@Override
+	public void performAction(String arg0, Collection<Parameter> arg1,
+			Content arg2) {
+		// TODO Auto-generated method stub
+		
 	}
 
-	@Override
-	public void onChangeEvent(Event arg0) {
-		// TODO Auto-generated method stub
-
-	}
-	
 	private NodeFilter createItemFilter() {
 		String[] fParam = getInitParams().getProperty("item-node-filter", "html,*,*,*").split(",", 4);
-		Collection<NodeFilter> fCol = new ArrayList();
+		Collection<NodeFilter> fCol = new ArrayList<NodeFilter>();
 		
 		if (!fParam[0].equals("*")) {
 			fCol.add(new TagNameFilter(fParam[0]));
@@ -217,12 +208,12 @@ public class HTMLContentProvider extends CrawlerContentProvider {
 	private NodeFilter createAttributeFilter() {
 		String[] fItems = getInitParams().getProperty(
 				"attribute-node-filter", "title,*,*,*;meta,*,*,*").split(";");
-		Collection<NodeFilter> fOrCol = new ArrayList();
+		Collection<NodeFilter> fOrCol = new ArrayList<NodeFilter>();
 		
 		for (int i = 0; i < fItems.length; i++) { 
 			
 			String[] fParam = fItems[i].split(",", 4);
-			Collection<NodeFilter> fAndCol = new ArrayList();
+			Collection<NodeFilter> fAndCol = new ArrayList<NodeFilter>();
 		
 			if (!fParam[0].equals("*")) {
 				fAndCol.add(new TagNameFilter(fParam[0]));
@@ -271,7 +262,6 @@ public class HTMLContentProvider extends CrawlerContentProvider {
 		NodeFilter attributeFilter = createAttributeFilter();
 		NodeList attrNodes = node.getChildren().extractAllNodesThatMatch(attributeFilter, true);
 		SimpleNodeIterator attrIter = attrNodes.elements();
-		Properties prop = new Properties();
 		
 		// Setting attributes of the content
 		while (attrIter.hasMoreNodes()) {
@@ -293,51 +283,49 @@ public class HTMLContentProvider extends CrawlerContentProvider {
 							((TagNode)attrNode).getTagName(), ((TagNode)attrNode).getTagName());
 				value = new String(StringEscapeUtils.unescapeHtml(attrNode.toPlainTextString()).trim());
 			}
-			
+						
 			// To avoid empty attributes
 			if (!value.equals(" ") && (value.length() > 1)) {
 				
-				// Considerung kay-value pairs
+				// Considering key-value pairs
 				if (value.indexOf(":") > -1) {
 					String[] keyValuePair = value.split(":", 2);
 					name = getInitParams().getProperty(keyValuePair[0].trim(), keyValuePair[0].trim());
 					value = getInitParams().getProperty(keyValuePair[1].trim(), keyValuePair[1].trim());
 				}
-					
-				// To avoid duplicated attribute names					
-				if (prop.getProperty(name) == null) {
-					prop.setProperty(name, "1");
-				} else if (prop.getProperty(name).equals("1")) {
-					c.getAttributeByName(name).setName(name + ".1");
-					prop.setProperty(name, "2");
-					name = name + ".2";
-				} else {
-					int index = Integer.valueOf(prop.getProperty(name)) + 1;
-					prop.setProperty(name, String.valueOf(index));
-					name = name + "." + String.valueOf(index);
-				}
-				
+									
 				int type = Attribute.ATTRIBUTE_TYPE_TEXT;
 				boolean flag = true;
 				
-				// Konsidering key-attribute-definition if defined
+				// Considering key-attribute-definition if defined
 				String keyAttr = getInitParams().getProperty("key-attributes");
 				if (keyAttr != null && (keyAttr.indexOf("[" + name + "]") == -1))
 					flag = false;
 					
 				if (!value.isEmpty()) {
-					c.addAttribute(new Attribute(name, value, type, flag));
-					logger.debug("Add attribute " + name + ": " + value);
+					name = transformAttributeName(name);
+					c.addAttribute(new Attribute(name, value.trim(), type, flag));
+					logger.debug("Add attribute " + name + ": " + value.trim());
 				}
 			}
 		}
 		
-		// Setting fulltext for for indexing
+		// Setting full text for for indexing
 		node.getChildren().keepAllNodesThatMatch(new NotFilter(new TagNameFilter("SCRIPT")), true );
 		node.getChildren().keepAllNodesThatMatch(new NotFilter(new TagNameFilter("SELECT")), true );
 		node.getChildren().keepAllNodesThatMatch(new NotFilter(new TagNameFilter("FORM")), true );
 		
 		c.setFulltext(StringEscapeUtils.unescapeHtml(node.toPlainTextString()));
+	}
+	
+	private String transformAttributeName(String name) {
+		name = name.replaceAll("ö|Ö", "oe");
+		name = name.replaceAll("ä|Ä", "ae");
+		name = name.replaceAll("ü|Ü", "ue");
+		name = name.replaceAll("ß", "ss");
+		name = name.replaceAll("![A-Za-z]", "_");
+		
+		return name.toUpperCase();
 	}
 
 }
